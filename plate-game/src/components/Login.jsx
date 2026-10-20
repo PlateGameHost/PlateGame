@@ -14,7 +14,7 @@ export function Login() {
   const handleGoogleSignIn = async () => {
     try {
       await firebase.doSignInWithGoogle();
-      navigate("/dih");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }
@@ -24,7 +24,7 @@ export function Login() {
     e.preventDefault();
     try {
       await firebase.doSignInWithEmailAndPassword(email, password);
-      navigate("/dih");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }
