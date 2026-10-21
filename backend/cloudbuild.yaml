@@ -1,20 +1,13 @@
 steps:
-  # 1. Build the container image using Google Cloud Buildpacks
-  - name: "gcr.io/k8s-skaffold/pack"
-    entrypoint: "pack"
-    args:
-      - "build"
-      - "${_IMAGE_NAME}"
-      - "--builder"
-      - "gcr.io/buildpacks/builder:v1"
-      - "--env"
-      - "GOOGLE_ENTRYPOINT=gunicorn --bind :$$PORT --workers 1 --threads 8 --timeout 0 app:app"
+  # 1. Build Docker image directly
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "${_IMAGE_NAME}", "."]
 
-  # 2. Push the image to Artifact Registry
+  # 2. Push image to Artifact Registry
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "${_IMAGE_NAME}"]
 
-  # 3. Deploy the container image to Cloud Run in Toronto
+  # 3. Deploy to Cloud Run
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
     args:
