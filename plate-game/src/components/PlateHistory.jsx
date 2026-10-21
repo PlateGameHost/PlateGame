@@ -1,6 +1,6 @@
 import React from "react";
 
-const PlateHistory = () => {
+export const PlateHistory = () => {
   const [rows, setRows] = useState([
     { number: "001", date: "2026-09-09", notes: "Yay!" },
     { number: "002", date: "2026-09-15" },
@@ -55,5 +55,3 @@ const PlateHistory = () => {
     </>
   );
 };
-
-export default PlateHistory;
