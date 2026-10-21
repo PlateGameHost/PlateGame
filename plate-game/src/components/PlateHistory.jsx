@@ -1,9 +1,9 @@
-import React from "react";
+import { useState } from "react";
 
-const PlateHistory = () => {
+export const PlateHistory = () => {
   const [rows, setRows] = useState([
-    { number: "001", date: "2026-09-09", notes: "Yay!" },
-    { number: "002", date: "2026-09-15" },
+    { number: "001", date: "May 20, 2026", notes: "Yay!" },
+    { number: "002", date: "Aug 15, 2026", notes: "On my way to Jack's house" },
     { number: "003", date: "2026-09-15", notes: "2 in 1" },
     { number: "004", date: "2026-09-20" },
   ]);
@@ -55,5 +55,3 @@ const PlateHistory = () => {
     </>
   );
 };
-
-export default PlateHistory;
