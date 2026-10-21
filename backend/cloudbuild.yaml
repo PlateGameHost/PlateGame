@@ -1,7 +1,8 @@
 steps:
-  # 1. Build Docker image directly
+  # 1. Build Docker image using the backend subdirectory
   - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "${_IMAGE_NAME}", "."]
+    args:
+      ["build", "-t", "${_IMAGE_NAME}", "-f", "backend/Dockerfile", "backend"]
 
   # 2. Push image to Artifact Registry
   - name: "gcr.io/cloud-builders/docker"
