@@ -2,21 +2,16 @@ import firebase_admin
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from firebase_admin import firestore, credentials, initialize_app
+from datetime import datetime, timezone
 import os
-
-cred = credentials.Certificate("./plate-game-f1495-firebase-adminsdk-fbsvc-f51c0269e4.json")
 
 app = Flask(__name__)
 
-# Initialize Firestore DB
-cred = credentials.Certificate('key.json')
-
-default_app = initialize_app(cred)
+default_app = initialize_app()
 db = firestore.client()
 
 users_ref = db.collection('prod', 'users')
 leagues_ref = db.collection('prod', 'leagues')
-
 
 @app.route('/add-user', methods=['POST'])
 def create():
@@ -37,6 +32,57 @@ def create():
             'plates': [],
         }
         users_ref.document(uuid).set(user_obj)
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return f"An Error Occured: {e}"
+    
+@app.route('/create-league', methods=['POST'])
+def create():
+    """
+        create() : Add document to Firestore collection with request body
+        this is for a user creating a new league
+        e.g. input json object: 
+        {
+        'league_name': name,
+        'username': username
+        }
+    """
+    try:
+        username = request.json.get('username')
+        league_name = request.json.get('league_name')
+
+        league_id = str(username) + str(datetime.now(timezone.utc))
+
+        league_obj = {
+            'league_name': league_name,
+            'league_id': league_id
+        }
+
+        users_ref.document(league_id).set(league_obj)
+        return jsonify({"success": True}), 200
+    
+    except Exception as e:
+        return f"An Error Occured: {e}"
+    
+@app.route('/join-league', methods=['POST'])
+def create():
+    """
+        create() : Add document to Firestore collection with request body
+        this is for a user joining a league that already exists
+        e.g. input json object: 
+        {
+        'league_id': id of league they want to join,
+        'uuid': uuid
+        }
+    """
+    try:
+        league_id = request.json.get('league_id')
+        uuid = request.json.get('uuid')
+
+        updated_obj = {uuid: 'in league'}
+
+        leagues_ref.document(league_id).update(updated_obj)
+
         return jsonify({"success": True}), 200
     except Exception as e:
         return f"An Error Occured: {e}"
@@ -67,25 +113,24 @@ def create():
     except Exception as e:
         return f"An Error Occured: {e}"
 
-@app.route('/get-plates', methods=['GET'])
+@app.route('/get-full-plate-history', methods=['GET'])
 def read():
     """
         read() : Fetches documents from Firestore collection as JSON
-        todo : Return document that matches query ID
-        all_todos : Return all documents
+        query params: uuid
     """
     try:
-        # Check if ID was passed to URL query
-        todo_id = request.args.get('id')    
-        if todo_id:
-            todo = todo_ref.document(todo_id).get()
-            return jsonify(todo.to_dict()), 200
+        uuid = request.args.get('uuid')
+        if uuid:
+            plate_history = users_ref.document(uuid).get('plates')
+            return jsonify(plate_history), 200
         else:
-            all_todos = [doc.to_dict() for doc in todo_ref.stream()]
-            return jsonify(all_todos), 200
+            return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
     except Exception as e:
         return f"An Error Occured: {e}"
-    
+
+
+'''
 @app.route('/update', methods=['POST', 'PUT'])
 def update():
     """
@@ -112,6 +157,7 @@ def delete():
         return jsonify({"success": True}), 200
     except Exception as e:
         return f"An Error Occured: {e}"
+'''
 
 port = int(os.environ.get('PORT', 8080))
 if __name__ == '__main__':
