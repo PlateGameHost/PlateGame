@@ -1,14 +1,23 @@
 import firebase_admin
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from firebase_admin import firestore, credentials, initialize_app
+from firebase_admin import firestore, credentials
 from datetime import datetime, timezone
 import os
 import traceback
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+cred_path = os.path.join(basedir, "serviceAccountKey.json")
+
+print(cred_path)
+if os.path.exists(cred_path):
+    cred = credentials.Certificate(cred_path)
+    default_app = firebase_admin.initialize_app(cred)
+else:
+    default_app = firebase_admin.initialize_app()
+
 app = Flask(__name__)
 
-default_app = initialize_app()
 db = firestore.client()
 
 prod_ref = db.collection('prod')
@@ -145,8 +154,46 @@ def read_plate_history():
     try:
         uuid = request.args.get('uuid')
         if uuid:
-            plate_history = users_ref.collection(uuid).get('plates')
+            users_doc = users_ref.get()
+            user = users_doc.get(uuid)
+            plate_history = user.get('plates')
             return jsonify(plate_history), 200
+        else:
+            return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
+    except Exception as e:
+        traceback.print_exc()
+        return f"An Error Occured: {e}"
+    
+@app.route('/get-all-user-info', methods=['GET'])
+def read_user_info():
+    """
+        read() : Fetches documents from Firestore collection as JSON
+        query params: uuid
+    """
+    try:
+        uuid = request.args.get('uuid')
+        if uuid:
+            users_doc = users_ref.get()
+            user = users_doc.get(uuid)
+            return jsonify(user), 200
+        else:
+            return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
+    except Exception as e:
+        traceback.print_exc()
+        return f"An Error Occured: {e}"
+    
+@app.route('/get-league-info', methods=['GET'])
+def read_user_info():
+    """
+        read() : Fetches documents from Firestore collection as JSON
+        query params: league_id
+    """
+    try:
+        league_id = request.args.get('league_id')
+        if league_id:
+            leagues_doc = leagues_ref.get()
+            league = leagues_doc.get(league_id)
+            return jsonify(league), 200
         else:
             return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
     except Exception as e:
