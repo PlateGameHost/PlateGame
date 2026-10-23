@@ -139,7 +139,7 @@ def read_plate_history():
     try:
         uuid = request.args.get('uuid')
         if uuid:
-            plate_history = users_ref.document(uuid).get('plates')
+            plate_history = users_ref.collection(uuid).get('plates')
             return jsonify(plate_history), 200
         else:
             return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
