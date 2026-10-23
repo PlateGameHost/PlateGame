@@ -5,6 +5,7 @@ import { FirebaseContext } from "./firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Route, Routes } from "react-router-dom";
 import { PlateHistory } from "./components/PlateHistory";
+import { PlateHistory } from "./components/PlateHistory";
 
 function App() {
   const [authUser, setAuthUser] = useState(null);
@@ -57,7 +58,7 @@ function App() {
     <>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/platehistory" element={<PlateHistory />} />
+        <Route path="/plate-history" element={<PlateHistory />} />
         <Route path="/" element={<Landing />} />
       </Routes>
     </>
