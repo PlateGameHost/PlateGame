@@ -10,9 +10,26 @@ app = Flask(__name__)
 default_app = initialize_app()
 db = firestore.client()
 
-users_ref = db.collection('prod', 'users')
-leagues_ref = db.collection('prod', 'leagues')
+prod_ref = db.collection('prod')
+users_ref = prod_ref.document('users')
+leagues_ref = prod_ref.document('leagues')
 
+@app.route('/', methods=['GET'])
+def read():
+    """
+        create() : Add document to Firestore collection with request body
+        this is for new users upon signup, fills in general info and creates the document
+        e.g. input json object: 
+        {
+        'general_info': {'name': 'Jack Fogerty', 'username': 'jackfogerty', 'email': 'bobsaggit678@gmail.com'},
+        'uuid': uuid
+        }
+    """
+    try:
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return f"An Error Occured: {e}"
+    
 @app.route('/add-user', methods=['POST'])
 def create():
     """
