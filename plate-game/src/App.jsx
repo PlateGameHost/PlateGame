@@ -5,7 +5,6 @@ import { FirebaseContext } from "./firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Route, Routes } from "react-router-dom";
 import { PlateHistory } from "./components/PlateHistory";
-import { PlateHistory } from "./components/PlateHistory";
 
 function App() {
   const [authUser, setAuthUser] = useState(null);
