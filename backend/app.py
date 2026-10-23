@@ -15,7 +15,7 @@ users_ref = prod_ref.document('users')
 leagues_ref = prod_ref.document('leagues')
 
 @app.route('/', methods=['GET'])
-def read():
+def read_health():
     """
         create() : Add document to Firestore collection with request body
         this is for new users upon signup, fills in general info and creates the document
@@ -31,7 +31,7 @@ def read():
         return f"An Error Occured: {e}"
     
 @app.route('/add-user', methods=['POST'])
-def create():
+def create_user():
     """
         create() : Add document to Firestore collection with request body
         this is for new users upon signup, fills in general info and creates the document
@@ -54,7 +54,7 @@ def create():
         return f"An Error Occured: {e}"
     
 @app.route('/create-league', methods=['POST'])
-def create():
+def create_league():
     """
         create() : Add document to Firestore collection with request body
         this is for a user creating a new league
@@ -82,7 +82,7 @@ def create():
         return f"An Error Occured: {e}"
     
 @app.route('/join-league', methods=['POST'])
-def create():
+def join_league():
     """
         create() : Add document to Firestore collection with request body
         this is for a user joining a league that already exists
@@ -105,7 +105,7 @@ def create():
         return f"An Error Occured: {e}"
 
 @app.route('/plate-found', methods=['POST'])
-def create():
+def plate_found():
     """
         create() : Add document to Firestore collection with request body
         this is for when a plate is found
@@ -131,7 +131,7 @@ def create():
         return f"An Error Occured: {e}"
 
 @app.route('/get-full-plate-history', methods=['GET'])
-def read():
+def read_plate_history():
     """
         read() : Fetches documents from Firestore collection as JSON
         query params: uuid
