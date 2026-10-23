@@ -29,7 +29,7 @@ def read_health():
     """
         create() : Add document to Firestore collection with request body
         this is for new users upon signup, fills in general info and creates the document
-        e.g. input json object: 
+        e.g. input json object: dih
         {
         'general_info': {'name': 'Jack Fogerty', 'username': 'jackfogerty', 'email': 'bobsaggit678@gmail.com'},
         'uuid': uuid
