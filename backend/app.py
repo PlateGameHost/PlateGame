@@ -183,7 +183,7 @@ def read_user_info():
         return f"An Error Occured: {e}"
     
 @app.route('/get-league-info', methods=['GET'])
-def read_user_info():
+def read_league_info():
     """
         read() : Fetches documents from Firestore collection as JSON
         query params: league_id
