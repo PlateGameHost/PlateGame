@@ -4,6 +4,7 @@ from flask_cors import CORS
 from firebase_admin import firestore, credentials, initialize_app
 from datetime import datetime, timezone
 import os
+import traceback
 
 app = Flask(__name__)
 
@@ -28,6 +29,7 @@ def read_health():
     try:
         return jsonify({"success": True}), 200
     except Exception as e:
+        traceback.print_exc()
         return f"An Error Occured: {e}"
     
 @app.route('/add-user', methods=['POST'])
@@ -51,6 +53,7 @@ def create_user():
         users_ref.document(uuid).set(user_obj)
         return jsonify({"success": True}), 200
     except Exception as e:
+        traceback.print_exc()
         return f"An Error Occured: {e}"
     
 @app.route('/create-league', methods=['POST'])
@@ -79,6 +82,7 @@ def create_league():
         return jsonify({"success": True}), 200
     
     except Exception as e:
+        traceback.print_exc()
         return f"An Error Occured: {e}"
     
 @app.route('/join-league', methods=['POST'])
@@ -102,6 +106,7 @@ def join_league():
 
         return jsonify({"success": True}), 200
     except Exception as e:
+        traceback.print_exc()
         return f"An Error Occured: {e}"
 
 @app.route('/plate-found', methods=['POST'])
@@ -128,6 +133,7 @@ def plate_found():
 
         return jsonify({"success": True, "plate added": plate_info}), 200
     except Exception as e:
+        traceback.print_exc()
         return f"An Error Occured: {e}"
 
 @app.route('/get-full-plate-history', methods=['GET'])
@@ -144,6 +150,7 @@ def read_plate_history():
         else:
             return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
     except Exception as e:
+        traceback.print_exc()
         return f"An Error Occured: {e}"
 
 
