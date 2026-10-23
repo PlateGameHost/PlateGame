@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+.plate-table th,
+.plate-table td {
+  padding: 6px 16px;
+}
