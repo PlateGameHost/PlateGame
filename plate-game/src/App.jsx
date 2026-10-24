@@ -60,6 +60,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/plate-history" element={<PlateHistory />} />
         <Route path="/create-account" element={<CreateAccount />} />
+        <Route path="/" element={<Landing/>}/>
       </Routes>
     </>
   );

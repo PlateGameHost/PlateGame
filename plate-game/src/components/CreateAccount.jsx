@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 
 export const CreateAccount = (props) => {
   const [username, setUsername] = useState("");
@@ -8,29 +8,32 @@ export const CreateAccount = (props) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [uuid, setUuid] = useState(null);
+  const [idToken, setIdToken] = useState('')
 
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const token = await user.getIdToken();
-          setIdToken(token);
-          setuserID(user.uid);
-        } catch (error) {
-          console.error("Error getting token:", error);
-        }
-      } else {
-        setIdToken("");
-        setuserID(null);
-      }
-    });
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [firstNameError, setFirstNameError] = useState('')
+  const [lastNameError, setLastNameError] = useState('')
+  const [usernameError, setUsernameError] = useState('')
 
-    return () => unsubscribe();
-  }, []);
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value)
+  }
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value)
+  }
 
   const handleSubmit = async () => {
-    if (login?.email) {
+    let validInput = emailError || passwordError || firstNameError || lastNameError || usernameError;
+
+    const auth = getAuth()
+
+    if (validInput) {
+      event.preventDefault();
+      firebase
+      .createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+      const user = userCredential.user
       fetch("/add-user", {
         method: "POST",
         headers: {
@@ -42,33 +45,20 @@ export const CreateAccount = (props) => {
             username: username,
             email: email,
           },
-          uuid: username,
+          uuid: user.uid,
         }),
+      })}).then(() => {
+        navigate("/login");
+      }).catch((error) => {
+        setError(error);
       })
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to load user profile");
-          return res.json();
-        })
-        .then((data) => {
-          if (data) {
-            setProfileInfo({
-              resume_data: data.resume_data,
-              contact_info: data.contact_info,
-            });
-            if (data.resume_data) {
-              const userSkills = data.resume_data.skills || "";
-              const userCoursework =
-                data.resume_data.education?.coursework || "";
-              const combinedKeywords = [userSkills, userCoursework]
-                .filter(Boolean)
-                .join(", ");
-              setResumeSkills(combinedKeywords);
-            }
-          }
-        })
-        .catch((err) => console.error(err));
+      
     }
   };
 
-  return <div>CreateAccount</div>;
+  return (<div>
+    <input id="email" type="text" value={email} onChange={handleEmailChange} placeholder="enter your email"/>
+  <input id="password" type="text" value={password} onChange={handlePasswordChange} placeholder="enter your password"/>
+  <button id="create" onClick={handleSubmit}>Create Account</button>
+  </div>);
 };
