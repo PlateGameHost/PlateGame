@@ -30,15 +30,6 @@ leagues_ref = db.collection('leagues')
 
 @app.route('/', methods=['GET'])
 def read_health():
-    """
-        create() : Add document to Firestore collection with request body
-        this is for new users upon signup, fills in general info and creates the document
-        e.g. input json object: dih
-        {
-        'general_info': {'name': 'Jack Fogerty', 'username': 'jackfogerty', 'email': 'bobsaggit678@gmail.com'},
-        'uuid': uuid
-        }
-    """
     try:
         return jsonify({"success": True}), 200
     except Exception as e:
@@ -61,9 +52,9 @@ def create_user():
         user_obj = {
             'general_info': request.json['general_info'],
             'leagues': {},
-            'plates': [],
         }
         users_ref.document(uuid).set(user_obj)
+
         return jsonify({"success": True}), 200
     except Exception as e:
         traceback.print_exc()
@@ -138,11 +129,11 @@ def plate_found():
 
         user_ref = users_ref.document(uuid)
 
+        plates_ref = user_ref.collection('plates')
+
         plate_info = request.json.get('plate_info')
 
-        user_ref.update({
-            'plates': ArrayUnion([plate_info])
-        })
+        plates_ref.document(plate_info['plate_num']).set(plate_info)
 
         return jsonify({"success": True, "plate added": plate_info}), 200
     except Exception as e:
@@ -159,16 +150,22 @@ def read_plate_history():
         uuid = request.args.get('uuid')
         if uuid:
             user_ref = users_ref.document(uuid)
-            user_doc = user_ref.get()
-            plate_history = user_doc.get('plates')
-            return jsonify(plate_history), 200
+            plates_ref = user_ref.collection('plates')
+            plate_history_snapshot = plates_ref.stream()
+
+            plate_history = []
+            for doc in plate_history_snapshot:
+                data = doc.to_dict()
+                plate_history.append(data)
+
+            return jsonify(plate_history)
         else:
             return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
     except Exception as e:
         traceback.print_exc()
         return f"An Error Occured: {e}"
     
-@app.route('/get-all-user-info', methods=['GET'])
+@app.route('/get-user-profile', methods=['GET'])
 def read_user_info():
     """
         read() : Fetches documents from Firestore collection as JSON
@@ -177,8 +174,8 @@ def read_user_info():
     try:
         uuid = request.args.get('uuid')
         if uuid:
-            users_doc = users_ref.get()
-            user = users_doc.get(uuid)
+            user_ref = users_ref.document(uuid)
+            user = user_ref.get()
             return jsonify(user), 200
         else:
             return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
