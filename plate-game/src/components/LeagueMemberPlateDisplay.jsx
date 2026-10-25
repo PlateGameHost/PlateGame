@@ -7,7 +7,7 @@ export const LeagueMemberPlateDisplay = ({ uuid }) => {
 
   useEffect(() => {
     const getUserInfo = async () => {
-      const res = await fetch(apiUrl + `/get-user-profile-info?uuid=${uuid}`);
+      const res = await fetch(apiUrl + `/get-user-profile?uuid=${uuid}`);
       if (!res.ok) {
         const errorData = await res.json();
         console.log(errorData);
