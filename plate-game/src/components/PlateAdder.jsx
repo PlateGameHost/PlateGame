@@ -35,7 +35,7 @@ export const PlateAdder = ({
         plate_num: currentPlate,
         date: date,
         notes: notes,
-        img: setImg,
+        img: img,
       };
       const res = await fetch(apiUrl + "/plate-found", {
         method: "POST",
@@ -53,6 +53,8 @@ export const PlateAdder = ({
       } else {
         const data = await res.json();
         setRows([...rows, plate_info]);
+        setNotes("");
+        setImg(null);
         console.log(data);
       }
     } catch (error) {
