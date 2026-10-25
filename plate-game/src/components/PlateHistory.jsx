@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { PlateAdder } from "./PlateAdder";
+import { LeagueMemberPlateDisplay } from "./LeagueMemberPlateDisplay";
 
 export const PlateHistory = ({ uuid }) => {
   const [rows, setRows] = useState([]);
@@ -81,11 +82,13 @@ export const PlateHistory = ({ uuid }) => {
       </table>
       <PlateAdder
         uuid={uuid}
-        currentPlate={constructPlateNumber(rows?.length + 1)}
+        currentPlate={constructPlateNumber((rows?.length || 0) + 1)}
         previousPlateDate={previousPlateDate}
         rows={rows}
         setRows={setRows}
       />
+
+      <LeagueMemberPlateDisplay />
     </>
   );
 };
