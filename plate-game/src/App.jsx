@@ -5,38 +5,23 @@ import { FirebaseContext } from "./firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Route, Routes } from "react-router-dom";
 import { PlateHistory } from "./components/PlateHistory";
+import { CreateAccount } from "./components/CreateAccount";
 
 function App() {
-  const [authUser, setAuthUser] = useState(null);
-
-  const firebase = useContext(FirebaseContext);
-
-  useEffect(() => {
-    if (firebase) {
-      const listener = firebase.auth.onAuthStateChanged((user) => {
-        if (user) {
-          setAuthUser(user);
-        } else {
-          setAuthUser(null);
-        }
-      });
-      //unsubscribe the listener when the component unmounts
-      return () => listener();
-    }
-  }, [firebase]);
-  const authenticated = !!authUser;
-
   const [idToken, setIdToken] = useState("");
   const [userID, setuserID] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
+          setLoading(true);
           const token = await user.getIdToken();
           setIdToken(token);
           setuserID(user.uid);
+          console.log("current user: ", user);
         } catch (error) {
           console.error("Error getting token:", error);
         }
@@ -44,21 +29,22 @@ function App() {
         setIdToken("");
         setuserID(null);
       }
+      setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
-  const Landing = () => {
-    return <h1>dih</h1>;
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/plate-history" element={<PlateHistory />} />
-        <Route path="/" element={<Landing />} />
+        <Route path="/plate-history" element={<PlateHistory uuid={userID} />} />
+        <Route path="/create-account" element={<CreateAccount />} />
+        <Route path="/" element={<PlateHistory uuid={userID} />} />
       </Routes>
     </>
   );
