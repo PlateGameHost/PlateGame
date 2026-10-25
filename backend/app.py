@@ -5,6 +5,7 @@ from firebase_admin import firestore, credentials
 from datetime import datetime, timezone
 import os
 import traceback
+from google.cloud.firestore_v1.transforms import ArrayUnion
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 cred_path = os.path.join(basedir, "serviceAccountKey.json")
@@ -18,11 +19,14 @@ else:
 
 app = Flask(__name__)
 
+ALLOWED_ORIGINS = ["http://localhost:5173", "https://plate-game-f1495.web.app"]
+
+CORS(app, resources={r"/*": {"origins": ALLOWED_ORIGINS}})
+
 db = firestore.client()
 
-prod_ref = db.collection('prod')
-users_ref = prod_ref.document('users')
-leagues_ref = prod_ref.document('leagues')
+users_ref = db.collection('users')
+leagues_ref = db.collection('leagues')
 
 @app.route('/', methods=['GET'])
 def read_health():
@@ -137,7 +141,7 @@ def plate_found():
         plate_info = request.json.get('plate_info')
 
         user_ref.update({
-        'plates': firestore.ArrayUnion(plate_info)
+            'plates': ArrayUnion([plate_info])
         })
 
         return jsonify({"success": True, "plate added": plate_info}), 200
@@ -154,9 +158,9 @@ def read_plate_history():
     try:
         uuid = request.args.get('uuid')
         if uuid:
-            users_doc = users_ref.get()
-            user = users_doc.get(uuid)
-            plate_history = user.get('plates')
+            user_ref = users_ref.document(uuid)
+            user_doc = user_ref.get()
+            plate_history = user_doc.get('plates')
             return jsonify(plate_history), 200
         else:
             return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
