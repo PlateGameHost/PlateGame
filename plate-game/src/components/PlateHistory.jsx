@@ -6,6 +6,10 @@ export const PlateHistory = ({ uuid }) => {
   const [rows, setRows] = useState([]);
   const [previousPlateDate, setPreviousPlateDate] = useState();
 
+  const [leagues, setLeagues] = useState([]);
+
+  const [otherUsers, setOtherUsers] = useState([]);
+
   const [sort, setSort] = useState({ column: "", ascending: true });
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
@@ -26,7 +30,25 @@ export const PlateHistory = ({ uuid }) => {
       }
     };
     getPlateHistory();
+
+    const getUserLeagues = async () => {
+      const res = await fetch(apiUrl + `/get-user-leagues?uuid=${uuid}`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.log(errorData);
+      } else {
+        const data = await res.json();
+        setLeagues(data);
+      }
+    };
+    getUserLeagues();
   }, []);
+
+  useEffect(() => {
+    const getOtherUsers = async () => {
+      leagues.map(league);
+    };
+  }, [leagues]);
 
   const constructPlateNumber = (plateNum) => {
     if (plateNum < 10) {

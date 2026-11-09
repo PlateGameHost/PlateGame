@@ -164,6 +164,43 @@ def read_plate_history():
     except Exception as e:
         traceback.print_exc()
         return f"An Error Occured: {e}"
+
+@app.route('/get-user-leagues', methods=['GET'])
+def read_user_info():
+    """
+        read() : Fetches documents from Firestore collection as JSON
+        query params: uuid
+    """
+    try:
+        uuid = request.args.get('uuid')
+        if uuid:
+            user_ref = users_ref.document(uuid)
+            user_leagues = user_ref.get('leagues')
+            return jsonify(user_leagues), 200
+        else:
+            return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
+    except Exception as e:
+        traceback.print_exc()
+        return f"An Error Occured: {e}"
+
+@app.route('/get-users-friends', methods=['GET'])
+def read_user_info():
+    """
+        read() : Fetches documents from Firestore collection as JSON
+        query params: uuid
+    """
+    try:
+        uuid = request.args.get('uuid')
+        if uuid:
+            user_ref = users_ref.document(uuid)
+            user_leagues = user_ref.get('leagues')
+            user_leagues_dict = user_leagues.to_dict()
+            
+        else:
+            return jsonify({'success': False, 'error': 'please include uuid in query params'}), 500
+    except Exception as e:
+        traceback.print_exc()
+        return f"An Error Occured: {e}"
     
 @app.route('/get-user-profile', methods=['GET'])
 def read_user_info():
